@@ -1026,7 +1026,7 @@ void output_data(Data & data, std::fstream & fout, std::map<std::string, bool> &
         if (output_flags["Tadc"])
             fout << std::setw(10)  << std::setprecision(2) << std::fixed << data.Tadc;
         if (output_flags["Tsb"])
-            fout << std::setw(10) << (data.T_lgX[0] + data.T_lgY[0] + data.T_lgZ[0])/3;
+            fout << std::setw(10) << data.Tsb;
         if (output_flags["ski"])
             fout << std::setw(6) << data.ski;
         if (output_flags["P"])
