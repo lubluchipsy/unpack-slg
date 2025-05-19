@@ -999,11 +999,17 @@ void output_data(Data & data, std::fstream & fout, std::map<std::string, bool> &
         }
         if ((output_flags["W_corr"])&&(output_flags["Model"]))
             output_corr_W(data, fout, c);
-        if (output_flags["Ta"])
+        if ((output_flags["Ta"])&&(!output_flags["Tlg2aks"]))
         {
             fout << std::setw(10)  << std::setprecision(2) << std::fixed << data.Ta[0]
                  << std::setw(10)  << data.Ta[1]
                  << std::setw(10)  << data.Ta[2]; 
+        }
+        if ((output_flags["Ta"])&&(output_flags["Tlg2aks"]))
+        {
+            fout << std::setw(10)  << std::setprecision(2) << std::fixed << data.T_lgX[0]
+                 << std::setw(10)  << data.T_lgY[0]
+                 << std::setw(10)  << data.T_lgZ[0]; 
         }
         if (output_flags["T_lg"])
         {
@@ -1024,11 +1030,11 @@ void output_data(Data & data, std::fstream & fout, std::map<std::string, bool> &
                  << std::setw(10)  << data.T_lgZ[0];
         }
         if (output_flags["Tadc"])
-            fout << std::setw(10)  << std::setprecision(2) << std::fixed << data.Tadc;
+            fout << std::setw(10) << std::setprecision(2) << std::fixed << data.Tadc;
         if (output_flags["Tsb"])
             fout << std::setw(10) << data.Tsb;
         if (output_flags["ski"])
-            fout << std::setw(6) << data.ski;
+            fout << std::setw(6)  << data.ski;
         if (output_flags["P"])
         {
             fout << std::setw(9)  << std::setprecision(4) << std::fixed << data.P[0]
@@ -1177,11 +1183,17 @@ void output_average_data(DataSum & datasum, std::fstream & fout, std::map<std::s
              << std::setw(14) << datasum.W[1] / datasum.Npacks
              << std::setw(14) << datasum.W[2] / datasum.Npacks;
     }
-    if (output_flags["Ta"])
+    if ((output_flags["Ta"])&&(!output_flags["Tlg2aks"]))
     {
         fout << std::setw(10)  << std::setprecision(3) << std::fixed << datasum.Ta[0] / datasum.Npacks
              << std::setw(10)  << datasum.Ta[1] / datasum.Npacks
              << std::setw(10)  << datasum.Ta[2] / datasum.Npacks; 
+    }
+    if ((output_flags["Ta"])&&(output_flags["Tlg2aks"]))
+    {
+        fout << std::setw(10)  << std::setprecision(3) << std::fixed << datasum.T_lgX[0] / datasum.Npacks
+             << std::setw(10)  << datasum.T_lgY[0] / datasum.Npacks
+             << std::setw(10)  << datasum.T_lgZ[0] / datasum.Npacks;
     }
     if (output_flags["T_lg"])
     {
@@ -1384,11 +1396,17 @@ void output_average_data(DataSum_m & datasum, std::fstream & fout, std::map<std:
              << std::setw(14) << datasum.W_corr[1] / datasum.Npacks
              << std::setw(14) << datasum.W_corr[2] / datasum.Npacks;
     }
-    if (output_flags["Ta"])
+    if ((output_flags["Ta"])&&(!output_flags["Tlg2aks"]))
     {
         fout << std::setw(10)  << std::setprecision(3) << std::fixed << datasum.Ta[0] / datasum.Npacks
              << std::setw(10)  << datasum.Ta[1] / datasum.Npacks
              << std::setw(10)  << datasum.Ta[2] / datasum.Npacks; 
+    }
+    if ((output_flags["Ta"])&&(output_flags["Tlg2aks"]))
+    {
+        fout << std::setw(10)  << std::setprecision(3) << std::fixed << datasum.T_lgX[0] / datasum.Npacks
+             << std::setw(10)  << datasum.T_lgY[0] / datasum.Npacks
+             << std::setw(10)  << datasum.T_lgZ[0] / datasum.Npacks;
     }
     if (output_flags["Tadc"])
         fout << std::setw(10)  << std::setprecision(3) << std::fixed << datasum.Tadc / datasum.Npacks;
@@ -1628,11 +1646,44 @@ std::pair<std::map<std::string, bool>, std::map<std::string, double>> read_confi
     std::getline(config, line); // ----------
     std::getline(config, line); // параметры вывода
     std::getline(config, line); // ----------
+    std::getline(config, line); // Общие:
+    std::getline(config, line); // ----------
+
+    while(std::getline(config, line))
+    {
+        if (line == "-------------------------------------------------------------------------------------")
+            break;
+        get_flag(line, output_flags);
+    }
+
+    std::getline(config, line); // Скорректированные данные:
+    std::getline(config, line); // ----------
+
+    while(std::getline(config, line))
+    {
+        if (line == "-------------------------------------------------------------------------------------")
+            break;
+        get_flag(line, output_flags);
+    }
+
+    std::getline(config, line); // Данные с термодатчиков:
+    std::getline(config, line); // ----------
+
+    while(std::getline(config, line))
+    {
+        if (line == "-------------------------------------------------------------------------------------")
+            break;
+        get_flag(line, output_flags);
+    }
+
+    std::getline(config, line); // Дополнительные данные:
+    std::getline(config, line); // ----------
 
     while(std::getline(config, line))
     {
         get_flag(line, output_flags);
     }
+
     return std::make_pair(output_flags, time_params);
 }
 //std::pair<std::map<std::string, bool>, double> read_config(std::fstream & config)
