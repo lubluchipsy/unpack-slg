@@ -1449,8 +1449,8 @@ void read_average_data(std::fstream & fin, std::fstream & fout, std::pair<std::m
 
     if (is_good(fin)) // читаем первый номер пакета, чтобы потом все нормально шло
     {
-        fin.seekp(-44, std::ios::cur); // к номеру пакета
-        fin.read(reinterpret_cast<char *>(&pack), 42);
+        fin.seekp(-46, std::ios::cur); // к номеру пакета
+        fin.read(reinterpret_cast<char *>(&pack), 44);
         fin.seekp(2, std::ios::cur); // конец
         counter = pack.Npack;
     }
@@ -1459,7 +1459,7 @@ void read_average_data(std::fstream & fin, std::fstream & fout, std::pair<std::m
 
     if (taver < data_old.Tsi)
     {
-        fin.seekp(-46, std::ios::cur);
+        fin.seekp(-48, std::ios::cur);
         read_data(fin, fout, output_params, c);
         return;
     }
@@ -1472,8 +1472,8 @@ void read_average_data(std::fstream & fin, std::fstream & fout, std::pair<std::m
     {
         if (is_good(fin))
         {
-            fin.seekp(-44, std::ios::cur);
-            fin.read(reinterpret_cast<char *>(&pack), 42);
+            fin.seekp(-46, std::ios::cur);
+            fin.read(reinterpret_cast<char *>(&pack), 44);
 
             if (pack.Npack != (counter+1))
             { 
@@ -1557,6 +1557,8 @@ std::pair<std::map<std::string, bool>, std::map<std::string, double>> read_confi
 
     std::getline(config, line); // --------- 
     std::getline(config, line); // параметры модели
+    std::getline(config, line); // (в математической модели в качестве температур акселерометров используются данные
+    std::getline(config, line); // с термодатчиков гироскопов)
     std::getline(config, line); // ---------    
 
     std::getline(config, line);

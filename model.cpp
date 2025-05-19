@@ -10,33 +10,47 @@ double poly3(const double a0, const double a1, const double a2, const double a3,
     return (a0 + a1*T + a2*T*T + a3*T*T*T);
 }
 
+double poly6(const double a0, const double a1, const double a2, const double a3, const double a4, const double a5, const double a6, const double T)
+{
+    return (a0 + a1*T + a2*T*T + a3*T*T*T);
+}
+
 std::array<double,3> zero_offset(const Constants & c, const Data & d)  // 6.Алгоритм «Вычисление смещение нуля АК»
 {
     std::array<double,3> da;
-    da[0] = poly3(c.da1[0], c.da1[1], c.da1[2], c.da1[3], d.Ta[0]) + c.da1mkd*d.Tadc;
-    da[1] = poly3(c.da2[0], c.da2[1], c.da2[2], c.da2[3], d.Ta[1]) + c.da2mkd*d.Tadc;
-    da[2] = poly3(c.da3[0], c.da3[1], c.da3[2], c.da3[3], d.Ta[2]) + c.da3mkd*d.Tadc;
+    double Tx = (d.T_lgX[0]+d.T_lgX[1]+d.T_lgX[2])/3;    
+    double Ty = (d.T_lgY[0]+d.T_lgY[1]+d.T_lgY[2])/3;
+    double Tz = (d.T_lgZ[0]+d.T_lgZ[1]+d.T_lgZ[2])/3;
+    da[0] = poly3(c.da1[0], c.da1[1], c.da1[2], c.da1[3], Tx) + c.da1mkd*d.Tadc;
+    da[1] = poly3(c.da2[0], c.da2[1], c.da2[2], c.da2[3], Ty) + c.da2mkd*d.Tadc;
+    da[2] = poly3(c.da3[0], c.da3[1], c.da3[2], c.da3[3], Tz) + c.da3mkd*d.Tadc;
     return da;
 }
 
 std::array<std::array<double,2>, 3> ak_misalignment_params(const Constants & c, const Data & d) // 5.Алгоритм «Вычисление параметров несоосности АК»
 {
+    double Tx = (d.T_lgX[0]+d.T_lgX[1]+d.T_lgX[2])/3;    
+    double Ty = (d.T_lgY[0]+d.T_lgY[1]+d.T_lgY[2])/3;
+    double Tz = (d.T_lgZ[0]+d.T_lgZ[1]+d.T_lgZ[2])/3;
     std::array<std::array<double,2>, 3> dGA;                                                    //dGA = dGA12 dGA13
-    dGA[0][0] = poly3(c.dGA12[0], c.dGA12[1], c.dGA12[2], c.dGA12[3], d.Ta[0]);                //       dGA21 dGA23
-    dGA[0][1] = poly3(c.dGA13[0], c.dGA13[1], c.dGA13[2], c.dGA13[3], d.Ta[0]);               //        dGA31 dGA32
-    dGA[1][0] = poly3(c.dGA21[0], c.dGA21[1], c.dGA21[2], c.dGA21[3], d.Ta[1]);
-    dGA[1][1] = poly3(c.dGA23[0], c.dGA23[1], c.dGA23[2], c.dGA23[3], d.Ta[1]);
-    dGA[2][0] = poly3(c.dGA31[0], c.dGA31[1], c.dGA31[2], c.dGA31[3], d.Ta[2]);
-    dGA[2][1] = poly3(c.dGA32[0], c.dGA32[1], c.dGA32[2], c.dGA32[3], d.Ta[2]);
+    dGA[0][0] = poly3(c.dGA12[0], c.dGA12[1], c.dGA12[2], c.dGA12[3], Tx);                //       dGA21 dGA23
+    dGA[0][1] = poly3(c.dGA13[0], c.dGA13[1], c.dGA13[2], c.dGA13[3], Tx);               //        dGA31 dGA32
+    dGA[1][0] = poly3(c.dGA21[0], c.dGA21[1], c.dGA21[2], c.dGA21[3], Ty);
+    dGA[1][1] = poly3(c.dGA23[0], c.dGA23[1], c.dGA23[2], c.dGA23[3], Ty);
+    dGA[2][0] = poly3(c.dGA31[0], c.dGA31[1], c.dGA31[2], c.dGA31[3], Tz);
+    dGA[2][1] = poly3(c.dGA32[0], c.dGA32[1], c.dGA32[2], c.dGA32[3], Tz);
     return dGA;
 }
 
 std::array<double, 3> scale_amendments(const Constants & c, const Data & d)  // 4.Алгоритм «Вычисление поправок масштабного коэффициента АК»
 {
     std::array<double,3> dKA;
-    dKA[0] = poly3(c.dKA1[0], c.dKA1[1], c.dKA1[2], c.dKA1[3], d.Ta[0]);
-    dKA[1] = poly3(c.dKA2[0], c.dKA2[1], c.dKA2[2], c.dKA2[3], d.Ta[1]);
-    dKA[2] = poly3(c.dKA3[0], c.dKA3[1], c.dKA3[2], c.dKA3[3], d.Ta[2]);
+    double Tx = (d.T_lgX[0]+d.T_lgX[1]+d.T_lgX[2])/3;    
+    double Ty = (d.T_lgY[0]+d.T_lgY[1]+d.T_lgY[2])/3;
+    double Tz = (d.T_lgZ[0]+d.T_lgZ[1]+d.T_lgZ[2])/3;
+    dKA[0] = poly3(c.dKA1[0], c.dKA1[1], c.dKA1[2], c.dKA1[3], Tx);
+    dKA[1] = poly3(c.dKA2[0], c.dKA2[1], c.dKA2[2], c.dKA2[3], Ty);
+    dKA[2] = poly3(c.dKA3[0], c.dKA3[1], c.dKA3[2], c.dKA3[3], Tz);
     return dKA;
 }
 
@@ -84,9 +98,9 @@ std::array<double, 3> gyro_drift(const Constants & c, const Data & d) //в ст�
     double Tx{std::accumulate(d.T_lgX.begin(), d.T_lgX.end(), 0)/d.T_lgX.size()};    
     double Ty{std::accumulate(d.T_lgY.begin(), d.T_lgY.end(), 0)/d.T_lgY.size()};
     double Tz{std::accumulate(d.T_lgZ.begin(), d.T_lgZ.end(), 0)/d.T_lgZ.size()}; 
-    dw_m[0] = poly3(c.dw1[0], c.dw1[1], c.dw1[2], c.dw1[3], Tx) + c.dw1dT*(Tx - Text - c.dTnom) + c.dwT1dT*Tx*(Tx - Text - c.dTnom);  
-    dw_m[1] = poly3(c.dw2[0], c.dw2[1], c.dw2[2], c.dw2[3], Ty) + c.dw2dT*(Ty - Text - c.dTnom) + c.dwT2dT*Ty*(Ty - Text - c.dTnom);
-    dw_m[2] = poly3(c.dw3[0], c.dw3[1], c.dw3[2], c.dw3[3], Tz) + c.dw3dT*(Tz - Text - c.dTnom) + c.dwT3dT*Tz*(Tz - Text - c.dTnom);
+    dw_m[0] = poly6(c.dw1[0], c.dw1[1], c.dw1[2], c.dw1[3], c.dw1[4], c.dw1[5], c.dw1[6], Tx) + c.dw1dT*(Tx - Text - c.dTnom) + c.dwT1dT*Tx*(Tx - Text - c.dTnom);  
+    dw_m[1] = poly6(c.dw2[0], c.dw2[1], c.dw2[2], c.dw2[3], c.dw2[4], c.dw2[5], c.dw2[6], Ty) + c.dw2dT*(Ty - Text - c.dTnom) + c.dwT2dT*Ty*(Ty - Text - c.dTnom);
+    dw_m[2] = poly6(c.dw3[0], c.dw3[1], c.dw3[2], c.dw3[3], c.dw3[4], c.dw3[5], c.dw3[6], Tz) + c.dw3dT*(Tz - Text - c.dTnom) + c.dwT3dT*Tz*(Tz - Text - c.dTnom);
 
     std::array<double, 3> dw;
     dw[0] = c.A1[0]*dw_m[0] + c.A1[1]*dw_m[1] + c.A1[2]*dw_m[2];
@@ -133,9 +147,9 @@ void read_pcfd(std::fstream & pcfd, Constants & constants)
     std::array<double,4> dKG2;
     std::array<double,4> dKG3;
 
-    std::array<double,4> dw1; double dw1dT; double dwT1dT; // LG dw12, dw1dT
-    std::array<double,4> dw2; double dw2dT; double dwT2dT;
-    std::array<double,4> dw3; double dw3dT; double dwT3dT;
+    std::array<double,7> dw1; double dw1dT; double dwT1dT; // LG dw12, dw1dT
+    std::array<double,7> dw2; double dw2dT; double dwT2dT;
+    std::array<double,7> dw3; double dw3dT; double dwT3dT;
 
     double dTnom;
 
@@ -241,6 +255,9 @@ void read_pcfd(std::fstream & pcfd, Constants & constants)
     dw1[1] = get_value(pcfd);  
     dw1[2] = get_value(pcfd);  
     dw1[3] = get_value(pcfd);  
+    dw1[4] = get_value(pcfd);  
+    dw1[5] = get_value(pcfd);  
+    dw1[6] = get_value(pcfd);  
     dw1dT = get_value(pcfd); 
     dwT1dT = get_value(pcfd); 
     dG12[0] = get_value(pcfd); 
@@ -261,6 +278,9 @@ void read_pcfd(std::fstream & pcfd, Constants & constants)
     dw2[1] = get_value(pcfd);
     dw2[2] = get_value(pcfd); 
     dw2[3] = get_value(pcfd); 
+    dw2[4] = get_value(pcfd);  
+    dw2[5] = get_value(pcfd);  
+    dw2[6] = get_value(pcfd);
     dw2dT = get_value(pcfd); 
     dwT2dT = get_value(pcfd);
     dG21[0] = get_value(pcfd); 
@@ -281,6 +301,9 @@ void read_pcfd(std::fstream & pcfd, Constants & constants)
     dw3[1] = get_value(pcfd);
     dw3[2] = get_value(pcfd); 
     dw3[3] = get_value(pcfd); 
+    dw3[4] = get_value(pcfd);  
+    dw3[5] = get_value(pcfd);  
+    dw3[6] = get_value(pcfd);
     dw3dT = get_value(pcfd);
     dwT3dT = get_value(pcfd);
     dG31[0] = get_value(pcfd); 

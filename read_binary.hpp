@@ -78,14 +78,14 @@ private:
 struct Constants
 {
     Constants():dG12{0,0,0,0}, dG13{0,0,0,0}, dG21{0,0,0,0}, dG23{0,0,0,0}, dG31{0,0,0,0}, dG32{0,0,0,0}, dKG1{0,0,0,0}, dKG2{0,0,0,0}, dKG3{0,0,0,0},
-                dw1{0,0,0,0}, dw1dT(0), dwT1dT(0), dw2{0,0,0,0}, dw2dT(0), dwT2dT(0), dw3{0,0,0,0}, dw3dT(0), dwT3dT(0), dTnom(0), A1{1,0,0}, A2{0,1,0}, A3{0,0,1},
+                dw1{0,0,0,0,0,0,0}, dw1dT(0), dwT1dT(0), dw2{0,0,0,0,0,0,0}, dw2dT(0), dwT2dT(0), dw3{0,0,0,0,0,0,0}, dw3dT(0), dwT3dT(0), dTnom(0), A1{1,0,0}, A2{0,1,0}, A3{0,0,1},
                 dKA1{0,0,0,0}, dKA2{0,0,0,0}, dKA3{0,0,0,0}, dGA12{0,0,0,0}, dGA13{0,0,0,0}, dGA21{0,0,0,0}, dGA23{0,0,0,0}, dGA31{0,0,0,0}, dGA32{0,0,0,0},
                 da1{0,0,0,0}, da1mkd(0), da2{0,0,0,0}, da2mkd(0), da3{0,0,0,0}, da3mkd(0){}
 
     Constants(std::array<double,4> idG12, std::array<double,4> idG13, std::array<double,4> idG21,
               std::array<double,4> idG23, std::array<double,4> idG31, std::array<double,4> idG32,
               std::array<double,4> idKG1, std::array<double,4> idKG2, std::array<double,4> idKG3,
-              std::array<double,4> idw1, double idw1dT, double idwT1dT, std::array<double,4> idw2, double idw2dT,  double idwT2dT, std::array<double,4> idw3, double idw3dT, double idwT3dT,
+              std::array<double,7> idw1, double idw1dT, double idwT1dT, std::array<double,7> idw2, double idw2dT,  double idwT2dT, std::array<double,7> idw3, double idw3dT, double idwT3dT,
               double idTnom, std::array<double,3> iA1, std::array<double,3> iA2, std::array<double,3> iA3,
               std::array<double,4> idKA1, std::array<double,4> idKA2, std::array<double,4> idKA3,
               std::array<double,4> idGA12, std::array<double,4> idGA13, std::array<double,4> idGA21,
@@ -107,9 +107,9 @@ struct Constants
     std::array<double,4> dKG2;
     std::array<double,4> dKG3;
 
-    std::array<double,4> dw1; double dw1dT; double dwT1dT; // LG dw12, dw1dT
-    std::array<double,4> dw2; double dw2dT; double dwT2dT;
-    std::array<double,4> dw3; double dw3dT; double dwT3dT;
+    std::array<double,7> dw1; double dw1dT; double dwT1dT; // LG dw12, dw1dT
+    std::array<double,7> dw2; double dw2dT; double dwT2dT;
+    std::array<double,7> dw3; double dw3dT; double dwT3dT;
 
     double dTnom;
 
@@ -260,6 +260,8 @@ std::string str_from_config(std::fstream & config);
 
 //MODEL.CPP
 double poly3(const double a0, const double a1, const double a2, const double a3, const double T);
+
+double poly6(const double a0, const double a1, const double a2, const double a3, const double a4, const double a5, const double a6, const double T);
 
 std::array<double,3> zero_offset(const Constants & c, const Data & d);
 
