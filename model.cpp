@@ -12,7 +12,7 @@ double poly3(const double a0, const double a1, const double a2, const double a3,
 
 double poly6(const double a0, const double a1, const double a2, const double a3, const double a4, const double a5, const double a6, const double T)
 {
-    return (a0 + a1*T + a2*T*T + a3*T*T*T);
+    return (a0 + a1*T + a2*T*T + a3*T*T*T +a4*T*T*T*T + a5*T*T*T*T*T + a6*T*T*T*T*T*T);
 }
 
 std::array<double,3> zero_offset(const Constants & c, const Data & d)  // 6.Алгоритм «Вычисление смещение нуля АК»
@@ -95,9 +95,9 @@ std::array<double, 3> gyro_drift(const Constants & c, const Data & d) //в ст�
 {
     std::array<double, 3> dw_m; //в измерительных осях
     double Text{d.Tsb};
-    double Tx{std::accumulate(d.T_lgX.begin(), d.T_lgX.end(), 0)/d.T_lgX.size()};    
-    double Ty{std::accumulate(d.T_lgY.begin(), d.T_lgY.end(), 0)/d.T_lgY.size()};
-    double Tz{std::accumulate(d.T_lgZ.begin(), d.T_lgZ.end(), 0)/d.T_lgZ.size()}; 
+    double Tx{std::accumulate(d.T_lgX.begin(), d.T_lgX.end(), 0.0)/d.T_lgX.size()};    
+    double Ty{std::accumulate(d.T_lgY.begin(), d.T_lgY.end(), 0.0)/d.T_lgY.size()};
+    double Tz{std::accumulate(d.T_lgZ.begin(), d.T_lgZ.end(), 0.0)/d.T_lgZ.size()}; 
     dw_m[0] = poly6(c.dw1[0], c.dw1[1], c.dw1[2], c.dw1[3], c.dw1[4], c.dw1[5], c.dw1[6], Tx) + c.dw1dT*(Tx - Text - c.dTnom) + c.dwT1dT*Tx*(Tx - Text - c.dTnom);  
     dw_m[1] = poly6(c.dw2[0], c.dw2[1], c.dw2[2], c.dw2[3], c.dw2[4], c.dw2[5], c.dw2[6], Ty) + c.dw2dT*(Ty - Text - c.dTnom) + c.dwT2dT*Ty*(Ty - Text - c.dTnom);
     dw_m[2] = poly6(c.dw3[0], c.dw3[1], c.dw3[2], c.dw3[3], c.dw3[4], c.dw3[5], c.dw3[6], Tz) + c.dw3dT*(Tz - Text - c.dTnom) + c.dwT3dT*Tz*(Tz - Text - c.dTnom);
@@ -177,7 +177,7 @@ void read_pcfd(std::fstream & pcfd, Constants & constants)
     {
         std::getline(pcfd, line);
     }
-    
+
     dTnom = get_value(pcfd);
     A1[0] = get_value(pcfd); 
     A1[1] = get_value(pcfd);
