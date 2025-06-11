@@ -19,7 +19,7 @@ namespace LSB
     //const double Tsist =  0.000001; // c
     const double Tdelay=  0.000001; // c
     const double Tsi   =  1.0/48.0;  // мкс
-          double T_lg  =  200.0/65535; //0.004;
+          double T_lg  =  0.004; //0.004;
           double bias_lg = -105;
           double Tadc  = 0.026;
           double bias_adc = -36.00;
@@ -688,26 +688,6 @@ void print_header(std::fstream & fout, std::map<std::string, bool> & output_flag
             fout << std::setw(10) << "Tsi[mks]";
         if (output_flags["Npack"])
             fout << std::setw(7)  << "Npack";
-        if (output_flags["A"])
-        {
-            fout << std::setw(14) << "AK1" 
-                 << std::setw(14) << "AK2"
-                 << std::setw(14) << "AK3";
-        }
-        if (output_flags["M"])
-        {
-            fout << std::setw(16) << "M0"
-                 << std::setw(16) << "M1"
-                 << std::setw(16) << "M2"
-                 << std::setw(16) << "M3";
-        }
-        if (output_flags["L"])
-        {   
-            fout << std::setw(16) << "L0"
-                 << std::setw(16) << "L1"
-                 << std::setw(16) << "L2"
-                 << std::setw(16) << "L3";
-        }
         if(output_flags["dFi"])
         {
             fout << std::setw(16) << "dFi_x[rad]"
@@ -818,6 +798,14 @@ void print_header(std::fstream & fout, std::map<std::string, bool> & output_flag
                  << std::setw(9) << "I_4"
                  << std::setw(9) << "I_5"
                  << std::setw(9) << "I_6";
+        }
+        if (output_flags["mi"])
+        {
+            fout << std::setw(9)  << "mi";
+        }
+        if (output_flags["mis"])
+        {
+            fout << std::setw(9)  << "mi(short)";
         }
         fout << std::endl;
     }
@@ -1031,8 +1019,10 @@ void output_data(Data & data, std::fstream & fout, std::map<std::string, bool> &
         }
         if (output_flags["Tadc"])
             fout << std::setw(10) << std::setprecision(2) << std::fixed << data.Tadc;
-        if (output_flags["Tsb"])
+        if ((output_flags["Tsb"]) && (!output_flags["Tlg2sb"]))
             fout << std::setw(10) << data.Tsb;
+        if ((output_flags["Tsb"]) && (output_flags["Tlg2sb"]))
+            fout << std::setw(10) << (data.T_lgX[0] + data.T_lgY[0] + data.T_lgZ[0])/3;
         if (output_flags["ski"])
             fout << std::setw(6)  << data.ski;
         if (output_flags["P"])
@@ -1215,8 +1205,10 @@ void output_average_data(DataSum & datasum, std::fstream & fout, std::map<std::s
     }
     if (output_flags["Tadc"])
         fout << std::setw(10)  << std::setprecision(3) << std::fixed << datasum.Tadc / datasum.Npacks;
-    if (output_flags["Tsb"])
+    if ((output_flags["Tsb"]) && (!output_flags["Tlg2sb"]))
         fout << std::setw(10) << (datasum.Tsb)/(datasum.Npacks);
+    if ((output_flags["Tsb"]) && (output_flags["Tlg2sb"]))
+        fout << std::setw(10) << (datasum.T_lgX[0] + datasum.T_lgY[0] + datasum.T_lgZ[0])/(3*datasum.Npacks);
     if (output_flags["P"])
     {
         fout << std::setw(9)  << std::setprecision(4) << std::fixed << datasum.P[0] / datasum.Npacks
@@ -1408,16 +1400,17 @@ void output_average_data(DataSum_m & datasum, std::fstream & fout, std::map<std:
              << std::setw(10)  << datasum.T_lgY[0] / datasum.Npacks
              << std::setw(10)  << datasum.T_lgZ[0] / datasum.Npacks;
     }
-    if (output_flags["Tadc"])
-        fout << std::setw(10)  << std::setprecision(3) << std::fixed << datasum.Tadc / datasum.Npacks;
     if (output_flags["T_lg"])
     {
         fout << std::setw(10)  << std::setprecision(3) << std::fixed << datasum.T_lgX[0] / datasum.Npacks
              << std::setw(10)  << datasum.T_lgX[1] / datasum.Npacks
+             << std::setw(10)  << datasum.T_lgX[2] / datasum.Npacks
              << std::setw(10)  << datasum.T_lgY[0] / datasum.Npacks
              << std::setw(10)  << datasum.T_lgY[1] / datasum.Npacks
+             << std::setw(10)  << datasum.T_lgY[2] / datasum.Npacks
              << std::setw(10)  << datasum.T_lgZ[0] / datasum.Npacks
-             << std::setw(10)  << datasum.T_lgZ[1] / datasum.Npacks;
+             << std::setw(10)  << datasum.T_lgZ[1] / datasum.Npacks
+             << std::setw(10)  << datasum.T_lgZ[2] / datasum.Npacks;
     }
     if (output_flags["T_lg0"])
     {
@@ -1425,7 +1418,11 @@ void output_average_data(DataSum_m & datasum, std::fstream & fout, std::map<std:
              << std::setw(10)  << datasum.T_lgY[0] / datasum.Npacks
              << std::setw(10)  << datasum.T_lgZ[0] / datasum.Npacks;
     }
-    if (output_flags["Tsb"])
+    if (output_flags["Tadc"])
+        fout << std::setw(10)  << std::setprecision(3) << std::fixed << datasum.Tadc / datasum.Npacks;
+    if ((output_flags["Tsb"]) && (!output_flags["Tlg2sb"]))
+        fout << std::setw(10) << (datasum.Tsb)/(datasum.Npacks);
+    if ((output_flags["Tsb"]) && (output_flags["Tlg2sb"]))
         fout << std::setw(10) << (datasum.T_lgX[0] + datasum.T_lgY[0] + datasum.T_lgZ[0])/(3*datasum.Npacks);
     if (output_flags["P"])
     {
@@ -1564,7 +1561,7 @@ std::pair<std::map<std::string, bool>, std::map<std::string, double>> read_confi
     std::getline(config, line); // форматирование
     std::getline(config, line); // ---------  
 
-    std::getline(config, line); // decod
+    std::getline(config, line);  // decod
     get_flag(line, output_flags); 
 
     std::getline(config, line);
@@ -1612,36 +1609,39 @@ std::pair<std::map<std::string, bool>, std::map<std::string, double>> read_confi
     std::getline(config, line); // ----------
 
     std::getline(config, line); 
-    value = get_number(line);
-    if (value!=0) LSB::T_lg = value;
+    double def{get_number(line)};
 
     std::getline(config, line); 
     value = get_number(line);
-    if (value!=0) LSB::bias_lg = value;
+    if (def==0) LSB::T_lg = value;
 
     std::getline(config, line); 
     value = get_number(line);
-    if (value!=0) LSB::Tadc = value;
+    if (def==0) LSB::bias_lg = value;
 
     std::getline(config, line); 
     value = get_number(line);
-    if (value!=0) LSB::bias_adc = value;
+    if (def==0) LSB::Tadc = value;
 
     std::getline(config, line); 
     value = get_number(line);
-    if (value!=0) LSB::Ta = value;
+    if (def==0) LSB::bias_adc = value;
 
     std::getline(config, line); 
     value = get_number(line);
-    if (value!=0) LSB::bias_a = value;
+    if (def==0) LSB::Ta = value;
 
     std::getline(config, line); 
     value = get_number(line);
-    if (value!=0) LSB::Tsb = value;
+    if (def==0) LSB::bias_a = value;
 
     std::getline(config, line); 
     value = get_number(line);
-    if (value!=0) LSB::bias_sb = value;
+    if (def==0) LSB::Tsb = value;
+
+    std::getline(config, line); 
+    value = get_number(line);
+    if (def==0) LSB::bias_sb = value;
 
     std::getline(config, line); // ----------
     std::getline(config, line); // параметры вывода

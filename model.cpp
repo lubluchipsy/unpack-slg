@@ -21,9 +21,10 @@ std::array<double,3> zero_offset(const Constants & c, const Data & d)  // 6.Ал
     double Tx = (d.T_lgX[0]+d.T_lgX[1]+d.T_lgX[2])/3;    
     double Ty = (d.T_lgY[0]+d.T_lgY[1]+d.T_lgY[2])/3;
     double Tz = (d.T_lgZ[0]+d.T_lgZ[1]+d.T_lgZ[2])/3;
-    da[0] = poly3(c.da1[0], c.da1[1], c.da1[2], c.da1[3], Tx) + c.da1mkd*d.Tadc;
-    da[1] = poly3(c.da2[0], c.da2[1], c.da2[2], c.da2[3], Ty) + c.da2mkd*d.Tadc;
-    da[2] = poly3(c.da3[0], c.da3[1], c.da3[2], c.da3[3], Tz) + c.da3mkd*d.Tadc;
+    double Text = (Tx+Ty+Tz)/3;
+    da[0] = poly3(c.da1[0], c.da1[1], c.da1[2], c.da1[3], Tx) + c.da1mkd*Text;
+    da[1] = poly3(c.da2[0], c.da2[1], c.da2[2], c.da2[3], Ty) + c.da2mkd*Text;
+    da[2] = poly3(c.da3[0], c.da3[1], c.da3[2], c.da3[3], Tz) + c.da3mkd*Text;
     return da;
 }
 
@@ -94,10 +95,10 @@ std::array<std::array<double,2>, 3> gyro_misalignment_params(const Constants & c
 std::array<double, 3> gyro_drift(const Constants & c, const Data & d) //в строительных осях   2. Алгоритм «Вычисление модельных значений дрейфа».
 {
     std::array<double, 3> dw_m; //в измерительных осях
-    double Text{d.Tsb};
     double Tx{std::accumulate(d.T_lgX.begin(), d.T_lgX.end(), 0.0)/d.T_lgX.size()};    
     double Ty{std::accumulate(d.T_lgY.begin(), d.T_lgY.end(), 0.0)/d.T_lgY.size()};
     double Tz{std::accumulate(d.T_lgZ.begin(), d.T_lgZ.end(), 0.0)/d.T_lgZ.size()}; 
+    double Text{(Tx+Ty+Tz)/3};
     dw_m[0] = poly6(c.dw1[0], c.dw1[1], c.dw1[2], c.dw1[3], c.dw1[4], c.dw1[5], c.dw1[6], Tx) + c.dw1dT*(Tx - Text - c.dTnom) + c.dwT1dT*Tx*(Tx - Text - c.dTnom);  
     dw_m[1] = poly6(c.dw2[0], c.dw2[1], c.dw2[2], c.dw2[3], c.dw2[4], c.dw2[5], c.dw2[6], Ty) + c.dw2dT*(Ty - Text - c.dTnom) + c.dwT2dT*Ty*(Ty - Text - c.dTnom);
     dw_m[2] = poly6(c.dw3[0], c.dw3[1], c.dw3[2], c.dw3[3], c.dw3[4], c.dw3[5], c.dw3[6], Tz) + c.dw3dT*(Tz - Text - c.dTnom) + c.dwT3dT*Tz*(Tz - Text - c.dTnom);
