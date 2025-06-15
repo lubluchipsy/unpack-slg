@@ -138,7 +138,7 @@ struct Constants
 class DataSum
 {
 public:
-    DataSum(double taver): Npacks(0), T(0), Tsi(0), time(0), Taver(taver), A{0,0,0}, dFi{0,0,0}, Tdelay{0,0,0},
+    DataSum(double taver): Npacks(0), T(0), Tsi(0), time(0), Taver(taver), A{0,0,0}, Fi{0,0,0}, dFi{0,0,0}, Tdelay{0,0,0},
                            V{0,0,0}, W{0,0,0}, Theta{0,0,0}, P{0,0,0}, U{0,0,0}, I{0,0,0,0,0,0}, Ta{0,0,0}, 
                            Tadc{0}, Tsb{0}, T_lgX{0,0,0}, T_lgY{0,0,0}, T_lgZ{0,0,0}{};
 
@@ -153,6 +153,7 @@ public:
     unsigned int Npack;
 
     std::array<double,3> A; // данные с акселерометров
+    std::array<double,3> Fi; //интеграл угла
     std::array<double,3> dFi; // углы поворота за Tsi
     std::array<double,3> Tdelay;
     std::array<double,3> V;
@@ -175,7 +176,7 @@ public:
 class DataSum_m
 {
 public:
-    DataSum_m(double taver): Npacks(0), T(0), Tsi(0), time(0), Taver(taver), A{0,0,0}, dFi{0,0,0}, Tdelay{0,0,0},
+    DataSum_m(double taver): Npacks(0), T(0), Tsi(0), time(0), Taver(taver), A{0,0,0}, Fi{0,0,0}, dFi{0,0,0}, Tdelay{0,0,0},
                              V{0,0,0}, W{0,0,0}, Theta{0,0,0}, P{0,0,0}, U{0,0,0}, I{0,0,0,0,0,0}, Ta{0,0,0}, Tadc{0}, Tsb{0}, 
                              T_lgX{0,0,0}, T_lgY{0,0,0}, T_lgZ{0,0,0}, dFi_corr{0,0,0}, Theta_corr{0,0,0}, V_corr{0,0,0}, W_corr{0,0,0}{};
 
@@ -190,6 +191,7 @@ public:
     unsigned int Npack;
 
     std::array<double,3> A; // данные с акселерометров
+    std::array<double,3> Fi; //интеграл угла
     std::array<double,3> dFi; // углы поворота за Tsi
     std::array<double,3> Tdelay;
     std::array<double,3> V;

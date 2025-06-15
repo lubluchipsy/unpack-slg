@@ -73,7 +73,7 @@ void Data::count_dFi(Data & data_old)
     for (auto i = 0; i < 3; i++)
     {
         if ((Fi[i]-data_old.Fi[i]) > std::numeric_limits<int>::max())
-            dFi.at(i) = ((Fi[i] - data_old.Fi[i]) - pow(2,32)) * LSB::A;
+            dFi.at(i) = ((Fi[i] - data_old.Fi[i]) - pow(2,32)) * LSB::Fi;
         else if ((Fi[i]-data_old.Fi[i]) < std::numeric_limits<int>::min())
             dFi[i] = ((Fi[i] - data_old.Fi[i]) + pow(2,32)) * LSB::Fi;
         else
@@ -347,7 +347,8 @@ void DataSum::add_data(const Data & data)
         V[i]     += data.V[i];
         W[i]     += data.W[i];
         P[i]     += data.P[i];
-        dFi[i] += data.dFi[i];
+        Fi[i]    += data.Fi[i];
+        dFi[i]   += data.dFi[i];
         Ta[i]    += data.Ta[i];
         Theta[i] += data.Theta[i];
     }
@@ -386,7 +387,8 @@ void DataSum_m::add_data(const Data & data, const Constants & c)
         V[i]     += data.V[i];
         W[i]     += data.W[i];
         P[i]     += data.P[i];
-        dFi[i] += data.dFi[i];
+        Fi[i]    += data.Fi[i];
+        dFi[i]   += data.dFi[i];
         Ta[i]    += data.Ta[i];
         Theta[i] += data.Theta[i];
     }
@@ -690,6 +692,12 @@ void print_header(std::fstream & fout, std::map<std::string, bool> & output_flag
             fout << std::setw(7)  << "Npack";
         if(output_flags["dFi"])
         {
+            fout << std::setw(16) << "Fi_x[rad]"
+                 << std::setw(16) << "Fi_y[rad]"
+                 << std::setw(16) << "Fi_z[rad]";
+        }
+        if(output_flags["dFi"])
+        {
             fout << std::setw(16) << "dFi_x[rad]"
                  << std::setw(16) << "dFi_y[rad]"
                  << std::setw(16) << "dFi_z[rad]";
@@ -947,6 +955,12 @@ void output_data(Data & data, std::fstream & fout, std::map<std::string, bool> &
             fout << std::setw(10) << std::setprecision(4)  << std::fixed << data.Tsi;
         if (output_flags["Npack"])
             fout << std::setw(7)  << data.Npack;
+        if (output_flags["Fi"])
+        {
+            fout << std::setw(16) << std::setprecision(12) << std::fixed << data.Fi[0] * LSB::Fi
+                 << std::setw(16) << data.Fi[1] * LSB::Fi
+                 << std::setw(16) << data.Fi[2] * LSB::Fi;
+        }
         if (output_flags["dFi"])
         {
             fout << std::setw(16) << std::setprecision(12) << std::fixed << data.dFi[0]
@@ -1143,13 +1157,19 @@ void output_average_data(DataSum & datasum, std::fstream & fout, std::map<std::s
         fout << std::setw(10) << std::setprecision(4)  << std::fixed << datasum.Tsi / datasum.Npacks;
     if (output_flags["Npack"])
         fout << std::setw(7)  << datasum.Npack;
-    if(output_flags["dFi"])
+    if (output_flags["Fi"])
+    {
+        fout << std::setw(16) << std::setprecision(12) << std::fixed << datasum.Fi[0] * LSB::Fi
+                << std::setw(16) << datasum.Fi[1] * LSB::Fi
+                << std::setw(16) << datasum.Fi[2] * LSB::Fi;
+    }
+    if (output_flags["dFi"])
     {
         fout << std::setw(16) << std::setprecision(12) << std::fixed << datasum.dFi[0] / datasum.Npacks
              << std::setw(16) << datasum.dFi[1] / datasum.Npacks
              << std::setw(16) << datasum.dFi[2] / datasum.Npacks;
     }
-    if(output_flags["Theta"])
+    if (output_flags["Theta"])
     {
         fout << std::setw(16) << std::setprecision(12) << std::fixed << datasum.Theta[0] / datasum.Npacks
              << std::setw(16) << datasum.Theta[1] / datasum.Npacks
@@ -1328,6 +1348,12 @@ void output_average_data(DataSum_m & datasum, std::fstream & fout, std::map<std:
         fout << std::setw(10) << std::setprecision(4)  << std::fixed << datasum.Tsi / datasum.Npacks;
     if (output_flags["Npack"])
         fout << std::setw(7)  << datasum.Npack;
+    if (output_flags["Fi"])
+    {
+        fout << std::setw(16) << std::setprecision(12) << std::fixed << datasum.Fi[0] * LSB::Fi
+                << std::setw(16) << datasum.Fi[1] * LSB::Fi
+                << std::setw(16) << datasum.Fi[2] * LSB::Fi;
+    }
     if(output_flags["dFi"])
     {
         fout << std::setw(16) << std::setprecision(12) << std::fixed << datasum.dFi[0] / datasum.Npacks
